@@ -47,7 +47,7 @@ public class main {
         
         clienteAction.adicionaClientesBanco(listaCliente);
         clienteAction.mediaCliente560();
-        clienteAction.imprimeClientesValidos560();
+        
         
 
         
