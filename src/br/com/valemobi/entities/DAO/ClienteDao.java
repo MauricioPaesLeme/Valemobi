@@ -97,6 +97,7 @@ public class ClienteDao {
 		return cliente;
 	}
     
+    //Recupera o ultimo ID adicionado pelo sistema
     public int ultimoClienteAdicionado() {
 		try {
 			List<Cliente> cliente = new ArrayList<Cliente>();
