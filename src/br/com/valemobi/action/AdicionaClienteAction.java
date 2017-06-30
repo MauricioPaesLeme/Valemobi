@@ -28,6 +28,7 @@ public class AdicionaClienteAction {
     public AdicionaClienteAction() {
         
     }
+    
     public void adicionaClientesBanco(List<Cliente> listaCliente) throws SQLException{
         ClienteDao dao = new ClienteDao();
         for(Cliente c : listaCliente){
@@ -40,41 +41,85 @@ public class AdicionaClienteAction {
         listaCliente.add(c);
     }
     
+    //Gera a media dos Clientes com total maior que 560, ID entre 1500 e 2700 e ativos
     public void mediaCliente560() throws SQLException{
         
-        List<Cliente> helper = new ArrayList<Cliente>();
+        List<Cliente> clientes = new ArrayList<Cliente>();
         Double total = 0.0;
         int nrClientesValidos = 0;
         
-        helper = listaClientesValidos560(helper);
+        clientes = dao.lista();
+        clientes = listaClientesValidosTotal560(clientes);
+        clientes = listaClientesValidosAtivo(clientes);
+        clientes = listaClientesValidosTotal560(clientes);
+        clientes = listaClientesValidosIDMenor2700(clientes);
+        clientes = listaClientesValidosIDMaior1500(clientes);
+        clientes = ordenarMenorMaior(clientes);
+       
         
-        for(Cliente c : helper){
+        for(Cliente c : clientes){
             total = total + c.getTotal();
             nrClientesValidos++;
         }
         if(nrClientesValidos == 0){
             System.out.println("Media: 0");
             System.out.println("Não há clientes validos: 0");
+        } else{
+            System.out.println("Media:" + total/nrClientesValidos);
+            System.out.println();
+            imprimeClientesValidos560(clientes);
         }
-        System.out.println("Media:" + total/nrClientesValidos);
+
     }
     
-    public List<Cliente> listaClientesValidos560(List<Cliente> clientes) throws SQLException{
+    //Remove os clientes que não tem total maior 560
+    public List<Cliente> listaClientesValidosTotal560(List<Cliente> clientes) throws SQLException{
         List<Cliente> helper = new ArrayList<Cliente>();
         
-        helper = dao.lista();
-        for(Cliente c : helper){
-            if(c.getTotal() > 560 && c.getId() > 1500 && c.getId() < 2700 && c.getAtivo() == true ){
-                clientes.add(c);
+        for(Cliente c : clientes){
+            if(c.getTotal() > 560){
+                helper.add(c);
             }
         }
-        return clientes;
+        return helper;
     }
     
-    public void imprimeClientesValidos560() throws SQLException{
-         List<Cliente> clientes = new ArrayList<Cliente>();
-         clientes = listaClientesValidos560(clientes);
-         clientes = ordenarMenorMaior(clientes);
+    //Remove os clientes que não tem ID maior que 1500
+    public List<Cliente> listaClientesValidosIDMaior1500(List<Cliente> clientes) throws SQLException{
+        List<Cliente> helper = new ArrayList<Cliente>();
+        for(Cliente c : clientes){
+            if(c.getId() > 1500){
+                helper.add(c);
+            }
+        }
+        return helper;
+    }
+    
+    //Remove os clientes que não tem ID menor que 2700
+    public List<Cliente> listaClientesValidosIDMenor2700(List<Cliente> clientes) throws SQLException{
+        List<Cliente> helper = new ArrayList<Cliente>();
+        for(Cliente c : clientes){
+            if(c.getId() < 2700){
+                helper.add(c);
+            }
+        }
+        return helper;
+    }
+    
+    //Remove os clientes que não estao ativos
+    public List<Cliente> listaClientesValidosAtivo(List<Cliente> clientes) throws SQLException{
+        List<Cliente> helper = new ArrayList<Cliente>();
+        for(Cliente c : clientes){
+            if(c.getAtivo() == true){
+                helper.add(c);
+            }
+        }
+        return helper;
+    }
+    
+    //Imprime os clientes utilizados na obtencao da media
+    public void imprimeClientesValidos560(List<Cliente> clientes) throws SQLException{
+         
          for(Cliente c : clientes){
              System.out.println("Id:" + c.getId());
              System.out.println("CPF/CNPJ:" + c.getCpf_cnpj());
@@ -85,6 +130,7 @@ public class AdicionaClienteAction {
          }
     }
     
+    //Ordena a Lista do Menor Total ao Maior
     public List<Cliente> ordenarMenorMaior(List<Cliente> clientes) {
         Collections.sort(clientes);        
         return clientes;
